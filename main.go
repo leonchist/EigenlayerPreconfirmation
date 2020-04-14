@@ -5,7 +5,7 @@ import (
 	"gitlab.warungpintar.co/sharing-session/practice-go-unit-test/cmd"
 )
 
-func main()  {
+func main() {
 	var rootCmd = &cobra.Command{
 		Use: "learn-testing",
 	}
