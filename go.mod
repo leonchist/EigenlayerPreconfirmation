@@ -3,6 +3,7 @@ module gitlab.warungpintar.co/sharing-session/practice-go-unit-test
 go 1.13
 
 require (
+	github.com/99designs/gqlgen v0.10.2
 	github.com/golang/mock v1.4.3
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/pressly/goose v2.6.0+incompatible // indirect

@@ -27,6 +27,15 @@ func NewTaskHandler(t service.TaskServiceInterface) *taskHandler {
 func (h *taskHandler) GetTasks(r *http.Request) *response.JSONResponse {
 	resp := response.NewJSONResponse()
 
+	ctx := r.Context()
+	data, err := h.taskSvc.GetAllTask(ctx)
+	if err != nil {
+		resp.SetError(err)
+		return resp
+	}
+	resp.Data = data
+	resp.Message = "Success get task data"
+	resp.Code = "200"
 	return resp
 }
 
@@ -44,5 +53,8 @@ func (h *taskHandler) CreateTask(r *http.Request) *response.JSONResponse {
 		resp.SetError(err)
 		return resp
 	}
+
+	resp.Message = "Success add task"
+	resp.Code = "201"
 	return resp
 }

@@ -8,7 +8,7 @@ import (
 )
 
 type TaskServiceInterface interface {
-	GetAllTask() error
+	GetAllTask(ctx context.Context) (response []object.TaskObjResponse, err error)
 	CreateTask(ctx context.Context, req object.TaskObjRequest) error
 }
 
@@ -22,8 +22,23 @@ func NewTaskService(taskRepo repository.TaskRepositoryInterface) *taskService {
 	}
 }
 
-func (s *taskService) GetAllTask() error {
-	return nil
+func (s *taskService) GetAllTask(ctx context.Context) (response []object.TaskObjResponse, err error) {
+	resp, err := s.taskRepo.GetAll(ctx)
+	if err != nil {
+		return response, err
+	}
+
+	for _, v := range resp {
+		obj := object.TaskObjResponse{
+			ID:        int(v.ID),
+			Name:      v.Name,
+			Status:    v.Status,
+			CreatedAt: v.CreatedAt,
+			UpdatedAt: v.UpdatedAt,
+		}
+		response = append(response, obj)
+	}
+	return response, nil
 }
 
 func (s *taskService) CreateTask(ctx context.Context, req object.TaskObjRequest) error {

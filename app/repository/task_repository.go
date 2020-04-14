@@ -10,7 +10,7 @@ import (
 )
 
 type TaskRepositoryInterface interface {
-	GetAll(ctx context.Context) ([]model.Task, error)
+	GetAll(ctx context.Context) (data []model.Task, err error)
 	Create(ctx context.Context, req object.TaskObjRequest) error
 }
 type taskRepository struct {
@@ -23,8 +23,26 @@ func NewTaskRepository(db *database.Store) *taskRepository {
 	}
 }
 
-func (r *taskRepository) GetAll(ctx context.Context) ([]model.Task, error) {
-	return []model.Task{}, nil
+func (r *taskRepository) GetAll(ctx context.Context) (data []model.Task, err error) {
+	queryStr := fmt.Sprintf(`
+	SELECT 
+		id, name, status, created_at, updated_at
+	FROM tasks`)
+
+	rows, err := r.db.Slave.QueryContext(ctx, queryStr)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		model := model.Task{}
+		if err = rows.Scan(&model.ID, &model.Name, &model.Status, &model.CreatedAt, &model.UpdatedAt); err != nil {
+			return data, err
+		}
+		data = append(data, model)
+	}
+	return data, nil
 }
 
 func (r *taskRepository) Create(ctx context.Context, req object.TaskObjRequest) error {
