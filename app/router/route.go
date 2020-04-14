@@ -27,6 +27,7 @@ func NewRouter(
 
 	// Task
 	r.GET("/tasks", task.GetTasks)
+	r.POST("/task", task.CreateTask)
 
 	return &Router{
 		options: r,
