@@ -12,6 +12,7 @@ import (
 type TaskHandlerInterface interface {
 	GetTasks(r *http.Request) *response.JSONResponse
 	CreateTask(r *http.Request) *response.JSONResponse
+	UpdateTask(r *http.Request) *response.JSONResponse
 }
 
 type taskHandler struct {
@@ -55,6 +56,26 @@ func (h *taskHandler) CreateTask(r *http.Request) *response.JSONResponse {
 	}
 
 	resp.Message = "Success add task"
+	resp.Code = "201"
+	return resp
+}
+
+func (h *taskHandler) UpdateTask(r *http.Request) *response.JSONResponse {
+	resp := response.NewJSONResponse()
+	var request object.TaskUpdateObjRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		resp.SetError(err)
+		return resp
+	}
+
+	ctx := r.Context()
+	err := h.taskSvc.UpdateTask(ctx, request)
+	if err != nil {
+		resp.SetError(err)
+		return resp
+	}
+
+	resp.Message = "Success update task"
 	resp.Code = "201"
 	return resp
 }

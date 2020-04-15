@@ -60,7 +60,6 @@ func Test_Create_Task(t *testing.T) {
 	ctrl := NewController(t)
 	defer ctrl.Finish()
 
-	// ctx := context.DeadlineExceeded
 	mock := mockRepositories.NewMockTaskRepositoryInterface(ctrl)
 	expected := object.TaskObjRequest{
 		Name:   "okky",
@@ -72,6 +71,26 @@ func Test_Create_Task(t *testing.T) {
 		taskRepo: mock,
 	}
 	err := service.CreateTask(context.Background(), expected)
+
+	assert.Nil(t, err)
+}
+
+func Test_Update_Task(t *testing.T) {
+	ctrl := NewController(t)
+	defer ctrl.Finish()
+
+	mock := mockRepositories.NewMockTaskRepositoryInterface(ctrl)
+	expected := object.TaskUpdateObjRequest{
+		ID:     1,
+		Name:   "okky",
+		Status: "todo",
+	}
+	mock.EXPECT().Update(context.Background(), expected).Times(1)
+
+	service := taskService{
+		taskRepo: mock,
+	}
+	err := service.UpdateTask(context.Background(), expected)
 
 	assert.Nil(t, err)
 }

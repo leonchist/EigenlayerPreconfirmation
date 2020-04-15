@@ -12,6 +12,7 @@ import (
 type TaskRepositoryInterface interface {
 	GetAll(ctx context.Context) (data []model.Task, err error)
 	Create(ctx context.Context, req object.TaskObjRequest) error
+	Update(ctx context.Context, req object.TaskUpdateObjRequest) error
 }
 type taskRepository struct {
 	db *database.Store
@@ -27,7 +28,9 @@ func (r *taskRepository) GetAll(ctx context.Context) (data []model.Task, err err
 	queryStr := fmt.Sprintf(`
 	SELECT 
 		id, name, status, created_at, updated_at
-	FROM tasks`)
+	FROM tasks
+	WHERE deleted_at is NULL
+	`)
 
 	rows, err := r.db.Slave.QueryContext(ctx, queryStr)
 	if err != nil {
@@ -58,5 +61,18 @@ func (r *taskRepository) Create(ctx context.Context, req object.TaskObjRequest) 
 		return err
 	}
 	return nil
+}
 
+func (r *taskRepository) Update(ctx context.Context, req object.TaskUpdateObjRequest) error {
+	queryStr := fmt.Sprintf(`UPDATE tasks
+	SET name = ?, status = ?
+	WHERE id = ? 
+	`)
+	_, err := r.db.Master.ExecContext(ctx, queryStr, req.Name,
+		req.Status, req.ID)
+
+	if err != nil {
+		return err
+	}
+	return nil
 }

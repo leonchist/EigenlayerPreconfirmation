@@ -10,6 +10,7 @@ import (
 type TaskServiceInterface interface {
 	GetAllTask(ctx context.Context) (response []object.TaskObjResponse, err error)
 	CreateTask(ctx context.Context, req object.TaskObjRequest) error
+	UpdateTask(ctx context.Context, req object.TaskUpdateObjRequest) error
 }
 
 type taskService struct {
@@ -43,6 +44,14 @@ func (s *taskService) GetAllTask(ctx context.Context) (response []object.TaskObj
 
 func (s *taskService) CreateTask(ctx context.Context, req object.TaskObjRequest) error {
 	err := s.taskRepo.Create(ctx, req)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *taskService) UpdateTask(ctx context.Context, req object.TaskUpdateObjRequest) error {
+	err := s.taskRepo.Update(ctx, req)
 	if err != nil {
 		return err
 	}
